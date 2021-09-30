@@ -73,7 +73,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
          KC_F1,       KC_F2,       KC_F3,       KC_F4,       KC_F5,       KC_F6,                                 KC_F7,       KC_F8,       KC_F9,      KC_F10,      KC_F11,      KC_F12, \
        _______,     _______,     _______,  UC(0x00E9),     _______,     _______,                               _______,  UC(0x00FB),  UC(0x00EE),  UC(0x00F4),     _______,     _______, \
        _______,  UC(0x00E2),     _______,     _______,     _______,     _______,                               _______,     _______,       KC_UP,     _______,     _______,     _______, \
-       _______,     _______,     _______,  UC(0x00E7),     _______,     _______,     _______,     _______,     _______,     KC_LEFT,     KC_DOWN,     KC_RGHT,     _______,     _______, \
+       _______,     _______,     _______,  UC(0x00E7),     _______,     _______,     _______,     _______,     _______,     KC_LEFT,     KC_DOWN,     KC_RGHT,     KC_BSLS,     _______, \
                             _______,     _______,     _______, _______,     _______,               _______,     _______,     _______,     _______,     _______ \
 ),
 /*
@@ -81,11 +81,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |                    |  F7  |  F8  |  F9  | F10  | F11  | F12  |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * | TAB  |   Q  |   W  |   ê  |   ë  |   T  |                    |   Y  |   û  |   î  |   ô  |   P  |  -   |
+ * | TAB  |   Q  | WIN  |   ê  |   ë  |   T  |                    |   Y  |   û  |   î  |   ô  |   P  |  -   |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |LSHIFT|   â  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |  UP  |   L  |   ;  |  '   |
+ * |LSHIFT|   â  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |  UP  |LINUX |   ;  |  '   |
  * |------+------+------+------+------+------|CRTL+D |    |CTRL+E |------+------+------+------+------+------|
- * |LCTRL |   Z  |   X  |   ç  |   V  |   B  |-------|    |-------|   N  | LEFT | DOWN |RIGHT |   /  |  `   |
+ * |LCTRL |   Z  |   X  |   ç  |   V  |   B  |-------|    |-------|   N  | MAC  | DOWN |RIGHT |   /  |  `   |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *            |   [  | LALT | LGUI |      | / SPACE /       \ENTER \  |      | BSPC | DEL  |  ]   |
  *            |      |      |      |      |/       /         \      \ |      |      |      |      |
@@ -93,9 +93,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
   [_ADJUST] = LAYOUT( \
          KC_F1,       KC_F2,       KC_F3,       KC_F4,       KC_F5,       KC_F6,                                 KC_F7,       KC_F8,       KC_F9,      KC_F10,      KC_F11,      KC_F12, \
-       _______,     _______,     _______,  UC(0x00EA),  UC(0x00EB),     _______,                               _______,  UC(0x00FB),  UC(0x00EE),  UC(0x00F4),     _______,     _______, \
-       _______,  UC(0x00E2),     _______,     _______,     _______,     _______,                               _______,     _______,       KC_UP,     _______,     _______,     _______, \
-       _______,     _______,     _______,  UC(0x00E7),     _______,     _______,     _______,     _______,     _______,     KC_LEFT,     KC_DOWN,     KC_RGHT,     _______,     _______, \
+       _______,     _______,     UC_M_WI,  UC(0x00EA),  UC(0x00EB),     _______,                               _______,  UC(0x00FB),  UC(0x00EE),  UC(0x00F4),     _______,     _______, \
+       _______,  UC(0x00E2),     _______,     _______,     _______,     _______,                               _______,     _______,       KC_UP,     UC_M_LN,     _______,     _______, \
+       _______,     _______,     _______,  UC(0x00E7),     _______,     _______,     _______,     _______,     _______,     UC_M_MA,     KC_DOWN,     KC_RGHT,     KC_BSLS,     _______, \
                             _______,     _______,     _______,     _______,     _______,               _______,     _______,     _______,     _______,     _______ \
   )
 };
@@ -131,19 +131,36 @@ static void print_status_narrow(void) {
     oled_write_ln_P(PSTR("LAYER"), false);
     switch (get_highest_layer(layer_state)) {
         case _QWERTY:
-            oled_write_P(PSTR("Base\n"), false);
+            oled_write_P(PSTR("BASE\n"), false);
             break;
         case _RAISE:
-            oled_write_P(PSTR("Raise"), false);
+            oled_write_P(PSTR("RAISE"), false);
             break;
         case _LOWER:
-            oled_write_P(PSTR("Lower"), false);
+            oled_write_P(PSTR("LOWER"), false);
             break;
         case _ADJUST:
-            oled_write_P(PSTR("Adj\n"), false);
+            oled_write_P(PSTR("ADJST"), false);
             break;
         default:
-            oled_write_ln_P(PSTR("Undef"), false);
+            oled_write_P(PSTR("UNDEF"), false);
+    }
+    oled_write_P(PSTR("\n\n"), false);
+
+    // Print current unicode mode
+    oled_write_ln_P(PSTR("UNICO"), false);
+    switch (get_unicode_input_mode()) {
+        case UC_LNX:
+            oled_write_P(PSTR("LINUX"), false);
+            break;
+        case UC_MAC:
+            oled_write_P(PSTR("MAC\n"), false);
+            break;
+        case UC_WIN:
+            oled_write_P(PSTR("WIN\n"), false);
+            break;
+        default:
+            oled_write_P(PSTR("UNDEF"), false);
     }
 }
 

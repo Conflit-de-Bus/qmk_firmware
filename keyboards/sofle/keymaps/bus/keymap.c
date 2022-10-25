@@ -17,7 +17,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * | TAB  |   Q  |   W  |   E  |   R  |   T  |                    |   Y  |   U  |   I  |   O  |   P  |  -   |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |LSHIFT|   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L  |   ;  |  '   |
- * |------+------+------+------+------+------|CRTL+D |    |CTRL+E |------+------+------+------+------+------|
+ * |------+------+------+------+------+------| CMD+D |    | CMD+E |------+------+------+------+------+------|
  * |LCTRL |   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |   /  |  `   |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *            |   [  | LALT | LGUI |LOWER | / SPACE /       \ENTER \  |RAISE | BSPC | DEL  |  ]   |
@@ -29,7 +29,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC,        KC_1,        KC_2,        KC_3,        KC_4,        KC_5,                                  KC_6,        KC_7,        KC_8,        KC_9,        KC_0,      KC_EQL, \
         KC_TAB,        KC_Q,        KC_W,        KC_E,        KC_R,        KC_T,                                  KC_Y,        KC_U,        KC_I,        KC_O,        KC_P,     KC_MINS, \
         KC_LSFT,       KC_A,        KC_S,        KC_D,        KC_F,        KC_G,                                  KC_H,        KC_J,        KC_K,        KC_L,     KC_SCLN,     KC_QUOT, \
-        KC_LCTRL,      KC_Z,        KC_X,        KC_C,        KC_V,        KC_B,  LCTL(KC_D),  LCTL(KC_E),        KC_N,        KC_M,     KC_COMM,      KC_DOT,     KC_SLSH,      KC_GRV, \
+        KC_LCTRL,      KC_Z,        KC_X,        KC_C,        KC_V,        KC_B,  LCMD(KC_D),  LCMD(KC_E),        KC_N,        KC_M,     KC_COMM,      KC_DOT,     KC_SLSH,      KC_GRV, \
                             KC_LBRC,     KC_LALT,     KC_LGUI,  MO(_LOWER),      KC_SPC,                KC_ENT,  MO(_RAISE),     KC_BSPC,      KC_DEL,     KC_RBRC \
 ),
 /*
@@ -164,12 +164,13 @@ static void print_status_narrow(void) {
     }
 }
 
-void oled_task_user(void) {
+bool oled_task_user(void) {
     if (is_keyboard_master()) {
         print_status_narrow();
     } else {
         render_logo();
     }
+    return false;
 }
 
 #endif
@@ -183,9 +184,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 bool encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) {
         if (clockwise) {
-            tap_code16(LCTL(LSFT(KC_Z)));
+            tap_code16(LCMD(LSFT(KC_Z)));
         } else {
-            tap_code16(LCTL(KC_Z));
+            tap_code16(LCMD(KC_Z));
         }
     } else if (index == 1) {
         if (clockwise) {
